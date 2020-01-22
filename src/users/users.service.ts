@@ -5,7 +5,7 @@ import { IUser, IUserExtended } from 'src/interfaces/users.interface';
 
 @Injectable()
 export class UsersService {
-    constructor(
+	constructor(
 		@Inject(USER_MODEL_INJECTION_KEY)
 		private readonly userModel: Model<IUserExtended>,
 	) {}
@@ -22,5 +22,9 @@ export class UsersService {
 
 	async findByName(kittenName: String): Promise<IKitten> {
 		return this.kittenModel.findOne({ savedName: kittenName });
-	}*/
+    }*/
+
+	async findOne(username: string): Promise<IUser> {
+		return this.userModel.findOne({ username: username });
+	}
 }

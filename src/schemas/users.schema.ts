@@ -1,7 +1,7 @@
 import * as mongoose from 'mongoose';
 
 export const UsersSchema = new mongoose.Schema({
-	name: String,
+	username: String,
 	mail: String,
 	insertDate: {
 		type: Date,
