@@ -1,15 +1,7 @@
 import { Length, Min, Max, IsInt, IsDate, IsMongoId } from 'class-validator';
 import { MAX_IMAGE_SIZE } from './create-image.dto';
+import { IKitten } from '../interfaces/kitten.interface';
 
-export interface IKitten {
-    name?: String;
-	age?: Number;
-	insertDate?: Date;
-    id?: String;
-    originalName: String
-    savedName: String;
-	size: Number;
-}
 
 export class CreateKittenDto implements IKitten {
 	@Length(1, 40)

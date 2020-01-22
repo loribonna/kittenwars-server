@@ -6,8 +6,8 @@ export const KittenSchema = new mongoose.Schema({
 	insertDate: {
 		type: Date,
 		default: Date.now,
-    },
-    originalName: String,
-    savedName: String,
-    size: Number
+	},
+	originalName: String,
+	savedName: String,
+	size: Number,
 });

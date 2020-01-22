@@ -1,16 +1,18 @@
 import { Module } from '@nestjs/common';
 import { KittensController } from './kittens.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { MongooseModule } from '@nestjs/mongoose';
-import { KittenSchema } from './kitten.schema';
+import { DatabaseModule } from 'src/database/database.module';
+import { KittenService } from './kitten.service';
+import { kittenProvider } from './kitten.provider';
 
 @Module({
 	imports: [
-		MongooseModule.forFeature([{ name: 'Kitten', schema: KittenSchema }]),
+		DatabaseModule,
 		MulterModule.register({
 			dest: './files',
 		}),
 	],
 	controllers: [KittensController],
+	providers: [KittenService, ...kittenProvider],
 })
 export class KittensModule {}
