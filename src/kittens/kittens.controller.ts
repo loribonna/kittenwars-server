@@ -30,7 +30,6 @@ export class KittensController {
 	@Get(':name/data')
 	async getKitten(@Param('name') kittenName, @Res() res: Response) {
 		const kittenInfo = await this.getKittenInfo(kittenName);
-		console.log(kittenInfo, kittenInfo.savedName);
 		res.sendFile(<string>kittenInfo.savedName, { root: './files' });
 	}
 
