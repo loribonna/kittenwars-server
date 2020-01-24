@@ -26,4 +26,8 @@ export class CreateKittenDto implements IKitten {
     @IsInt()
 	@Max(MAX_IMAGE_SIZE)
 	size: Number;
+
+	@IsInt()
+	@Min(0)
+	votes: Number;
 }
