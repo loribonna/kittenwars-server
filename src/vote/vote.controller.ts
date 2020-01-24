@@ -1,4 +1,11 @@
-import { Controller, Get, HttpException, HttpStatus, Put, Param } from '@nestjs/common';
+import {
+	Controller,
+	Get,
+	HttpException,
+	HttpStatus,
+	Put,
+	Body,
+} from '@nestjs/common';
 import { KittenService } from 'src/kittens/kitten.service';
 import { IKitten } from 'src/interfaces/kitten.interface';
 
@@ -7,24 +14,28 @@ export class VoteController {
 	constructor(private readonly kittenService: KittenService) {}
 
 	@Get()
-	async getKittens() {
-        try{
-            const kittens = await this.kittenService.getRandomKittens(2);
+	async getKittens(): Promise<IKitten[]> {
+		try {
+			return this.kittenService.getRandomKittens(2);
+		} catch (e) {
+			console.error(e);
+			throw new HttpException(
+				'Server Error',
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 
-            return kittens;
-        }catch(e){
-            console.error(e);
-            throw new HttpException('Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
-    
-    @Put()
-    async voteKittens(@Param() kitten: IKitten) {
-        try{
-            return this.kittenService.voteKitten(kitten);
-        }catch(e){
-            console.error(e);
-            throw new HttpException('Server Error', HttpStatus.INTERNAL_SERVER_ERROR);
-        }
-    }
+	@Put()
+	async voteKittens(@Body() kitten: IKitten): Promise<IKitten> {
+		try {
+			return this.kittenService.voteKitten(kitten);
+		} catch (e) {
+			console.error(e);
+			throw new HttpException(
+				'Server Error',
+				HttpStatus.INTERNAL_SERVER_ERROR,
+			);
+		}
+	}
 }

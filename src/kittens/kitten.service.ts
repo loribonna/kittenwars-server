@@ -32,9 +32,9 @@ export class KittenService {
 
 	async voteKitten(kitten: IKitten): Promise<IKitten> {
 		return this.kittenModel.findOneAndUpdate(
-			{ _id: kitten.savedName },
+			{ savedName: kitten.savedName },
 			{ $inc: { votes: 1 } },
-			{ new: true }
+			{ new: true },
 		);
 	}
 }

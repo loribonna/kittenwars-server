@@ -7,6 +7,10 @@ import {
 export const databaseProvider = [
 	{
 		provide: DATABASE_INJECTION_KEY,
-		useFactory: () => mongoose.connect(MONGODB_CONNECTION_URI),
+		useFactory: () => {
+			const connection = mongoose.connect(MONGODB_CONNECTION_URI)
+			mongoose.set('useFindAndModify', false);
+			return connection
+		},
 	},
 ];
