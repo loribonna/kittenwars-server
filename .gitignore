@@ -35,3 +35,6 @@ lerna-debug.log*
 
 # TMP Files
 /files
+
+# Environment
+.env
