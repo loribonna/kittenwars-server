@@ -7,7 +7,8 @@ export interface IKitten {
 	insertDate?: Date;
     originalName: String
     savedName: String;
-	size: Number;
+    size: Number;
+    votes: Number;
 }
 
 export interface IKittenExtended extends Document, IKitten {}

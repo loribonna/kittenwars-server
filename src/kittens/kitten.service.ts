@@ -16,6 +16,7 @@ export class KittenService {
 			originalName: file.originalName,
 			savedName: file.filename,
 			size: file.size,
+			votes: 0,
 		};
 		const kitten = new this.kittenModel(obj);
 		return kitten.save();
@@ -23,5 +24,17 @@ export class KittenService {
 
 	async findByName(kittenName: String): Promise<IKitten> {
 		return this.kittenModel.findOne({ savedName: kittenName });
+	}
+
+	async getRandomKittens(size = 1): Promise<IKitten[]> {
+		return this.kittenModel.aggregate([{ $sample: { size: size } }]);
+	}
+
+	async voteKitten(kittenSavedName: String): Promise<IKitten> {
+		return this.kittenModel.findOneAndUpdate(
+			{ savedName: kittenSavedName },
+			{ $inc: { votes: 1 } },
+			{ new: true },
+		);
 	}
 }

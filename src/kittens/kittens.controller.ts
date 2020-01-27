@@ -14,6 +14,7 @@ import { CreateImageDto } from 'src/dto/create-image.dto';
 import { diskStorage } from 'multer';
 import { IKitten } from 'src/interfaces/kitten.interface';
 import { KittenService } from './kitten.service';
+import { Response } from 'express';
 
 interface Survey {}
 
@@ -23,14 +24,13 @@ export class KittensController {
 
 	@Get(':name')
 	async getKittenInfo(@Param('name') kittenName): Promise<IKitten> {
-		return this.kittenService.findByName(kittenName)[0];
+		return this.kittenService.findByName(kittenName);
 	}
 
 	@Get(':name/data')
-	async getKitten(@Param('name') kittenName, @Res() res) {
+	async getKitten(@Param('name') kittenName, @Res() res: Response) {
 		const kittenInfo = await this.getKittenInfo(kittenName);
-		console.log(kittenInfo[0], kittenInfo[0].savedName);
-		res.sendFile(kittenInfo[0].savedName, { root: './files' });
+		res.sendFile(<string>kittenInfo.savedName, { root: './files' });
 	}
 
 	@Put()

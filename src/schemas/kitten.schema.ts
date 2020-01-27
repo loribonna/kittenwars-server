@@ -10,4 +10,8 @@ export const KittenSchema = new mongoose.Schema({
 	originalName: String,
 	savedName: String,
 	size: Number,
+	votes: {
+		type: Number,
+		default: 0
+	}
 });
