@@ -30,9 +30,9 @@ export class KittenService {
 		return this.kittenModel.aggregate([{ $sample: { size: size } }]);
 	}
 
-	async voteKitten(kitten: IKitten): Promise<IKitten> {
+	async voteKitten(kittenSavedName: String): Promise<IKitten> {
 		return this.kittenModel.findOneAndUpdate(
-			{ savedName: kitten.savedName },
+			{ savedName: kittenSavedName },
 			{ $inc: { votes: 1 } },
 			{ new: true },
 		);

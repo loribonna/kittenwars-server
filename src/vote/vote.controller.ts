@@ -4,10 +4,11 @@ import {
 	HttpException,
 	HttpStatus,
 	Put,
-	Body,
+	Body
 } from '@nestjs/common';
 import { KittenService } from 'src/kittens/kitten.service';
 import { IKitten } from 'src/interfaces/kitten.interface';
+import { KittenInfoDto } from 'src/dto/kitten-info.dto';
 
 @Controller('vote')
 export class VoteController {
@@ -27,9 +28,9 @@ export class VoteController {
 	}
 
 	@Put()
-	async voteKittens(@Body() kitten: IKitten): Promise<IKitten> {
+	async voteKittens(@Body() kitten: KittenInfoDto): Promise<IKitten> {
 		try {
-			return this.kittenService.voteKitten(kitten);
+			return this.kittenService.voteKitten(kitten.savedName);
 		} catch (e) {
 			console.error(e);
 			throw new HttpException(
