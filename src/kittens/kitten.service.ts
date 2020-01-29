@@ -37,4 +37,11 @@ export class KittenService {
 			{ new: true },
 		);
 	}
+
+	async getMostLikedKittens(limit: number = 1) {
+		if(limit<=0){
+			return;
+		}
+		return this.kittenModel.find().sort({'votes':'desc'}).limit(limit);
+	}
 }

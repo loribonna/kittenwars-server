@@ -13,6 +13,7 @@ export class AuthService {
 	async handlePassportAuth(profile: IUser): Promise<{ jwt: string }> {
 		try {
 			let user = await this.userService.findById(profile.account.id);
+
 			if (!user) {
 				user = await this.userService.create(profile);
 			}

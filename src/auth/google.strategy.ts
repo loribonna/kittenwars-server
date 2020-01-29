@@ -33,6 +33,7 @@ export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
 				id: profile.id,
 				token: accessToken,
 			},
+			score: 0
 		};
 
 		try {

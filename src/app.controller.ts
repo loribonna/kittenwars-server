@@ -10,3 +10,13 @@ export class AppController {
 		res.sendFile('index.html', { root: './statics' });
 	}
 }
+
+@Controller()
+export class BaseController {
+	constructor(){}
+
+	@Get()
+	redirectToApp(@Res() res:Response){
+		res.redirect('/app')
+	}
+}

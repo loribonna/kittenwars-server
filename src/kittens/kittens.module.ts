@@ -14,5 +14,6 @@ import { kittenProvider } from './kitten.provider';
 	],
 	controllers: [KittensController],
 	providers: [KittenService, ...kittenProvider],
+	exports: [KittenService]
 })
 export class KittensModule {}

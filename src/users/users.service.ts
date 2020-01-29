@@ -10,26 +10,12 @@ export class UsersService {
 		private readonly userModel: Model<IUserExtended>,
 	) {}
 
-	/*async create(file: CreateImageDto): Promise<IUser> {
-		const obj: IKitten = {
-			originalName: file.originalName,
-			savedName: file.filename,
-			size: file.size,
-		};
-		const kitten = new this.kittenModel(obj);
-		return kitten.save();
-	}
-
-	async findByName(kittenName: String): Promise<IKitten> {
-		return this.kittenModel.findOne({ savedName: kittenName });
-    }*/
-
 	async findOne(username: string): Promise<IUser> {
 		return this.userModel.findOne({ username: username });
 	}
 
-	async findById(id: String):Promise<IUser> {
-		return this.userModel.findOne({"account.id":id});
+	async findById(id: String): Promise<IUser> {
+		return this.userModel.findOne({ 'account.id': id });
 	}
 
 	async create(user: IUser): Promise<IUser> {
@@ -38,7 +24,9 @@ export class UsersService {
 	}
 
 	async userExists(user: IUser): Promise<boolean> {
-		const doc = await this.userModel.find({"account.id":user.account.id}).limit(1);
+		const doc = await this.userModel
+			.find({ 'account.id': user.account.id })
+			.limit(1);
 		return doc != null;
 	}
 }
