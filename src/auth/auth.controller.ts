@@ -5,40 +5,33 @@ import {
 	Res,
 	Next,
 	UnauthorizedException,
+	UseGuards,
+	InternalServerErrorException,
 } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { NextFunction } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import passport = require('passport');
+import { AuthGuard } from '@nestjs/passport';
+import { BASE_URL } from 'src/constants/constants';
 
 @Controller('auth')
 export class AuthController {
 	constructor(private readonly auth: AuthService) {}
 
 	@Get('google/callback')
-	async handleOauthCallback(
-		@Req() req,
-		@Res() res,
-		@Next() next: NextFunction,
-	) {
-		const params = {
-			session: false,
-			callbackURL: `<domain>/auth/google/callback`,
-		};
+	@UseGuards(AuthGuard('google'))
+	async handleOauthCallback(@Req() req: Request, @Res() res: Response) {
+		const jwt: string = (<any>req.user).jwt;
 
-		// We use callback here, but you can let passport do the redirect
-		// http://www.passportjs.org/docs/downloads/html/#custom-callback
-		passport.authenticate('google', params, (err, user) => {
-			if (err) return next(err);
-			if (!user) return next(new UnauthorizedException());
-
-			// I generate the JWT token myself and redirect the user,
-			// but you can make it more smart.
-			//this.generateTokenAndRedirect(req, res, user);
-			return next(user);
-		})(req, res, next);
+		if (jwt) res.redirect('http://' + BASE_URL + '/app/jwt/' + jwt);
+		else {
+			console.log('JWT ERROR');
+			throw new InternalServerErrorException('JWT error');
+		}
 	}
 
 	@Get('google')
+	@UseGuards(AuthGuard('google'))
 	async handleOauthRequest(
 		@Req() req,
 		@Res() res,
@@ -46,8 +39,8 @@ export class AuthController {
 	) {
 		const params = {
 			session: false,
-			scope: ['<specify scope base on provider>'],
-			callbackURL: `<domain>/auth/google/callback`,
+			scope: ['profile'],
+			callbackURL: `http://` + BASE_URL + `auth/google/callback`,
 		};
 		passport.authenticate('google', params)(req, res, next);
 	}

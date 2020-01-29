@@ -7,14 +7,17 @@ import {
 	UseInterceptors,
 	UploadedFile,
 	Param,
+	UseGuards
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateKittenDto } from 'src/dto/create-kitten.dto';
 import { CreateImageDto } from 'src/dto/create-image.dto';
 import { diskStorage } from 'multer';
 import { IKitten } from 'src/interfaces/kitten.interface';
 import { KittenService } from './kitten.service';
-import { Response } from 'express';
+import { Response, Request } from 'express';
+import { AuthGuard } from '@nestjs/passport';
+import { join } from 'path';
+var fs = require('fs');
 
 interface Survey {}
 
@@ -23,21 +26,23 @@ export class KittensController {
 	constructor(private readonly kittenService: KittenService) {}
 
 	@Get(':name')
+	@UseGuards(AuthGuard('jwt'))
 	async getKittenInfo(@Param('name') kittenName): Promise<IKitten> {
 		return this.kittenService.findByName(kittenName);
 	}
 
 	@Get(':name/data')
+	@UseGuards(AuthGuard('jwt'))
 	async getKitten(@Param('name') kittenName, @Res() res: Response) {
 		const kittenInfo = await this.getKittenInfo(kittenName);
-		res.sendFile(<string>kittenInfo.savedName, { root: './files' });
+		
+		fs.readFile(join(__dirname, '..','..', 'files',<string>kittenInfo.savedName), function(err, data) {
+			if (err) throw err;
+			res.contentType('jpeg')
+            res.send(data.toString('base64'));
+        });
 	}
-
-	@Put()
-	voteKittens(): Survey {
-		return {};
-	}
-
+	
 	@Post()
 	@UseInterceptors(
 		FileInterceptor('image', {

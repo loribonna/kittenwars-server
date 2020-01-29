@@ -2,7 +2,6 @@ import { Document } from "mongoose";
 
 export interface IUser {
     username: String;
-	email: String;
 	insertDate?: Date;
 	method: String;
 	account?: {

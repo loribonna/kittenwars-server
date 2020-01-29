@@ -27,4 +27,18 @@ export class UsersService {
 	async findOne(username: string): Promise<IUser> {
 		return this.userModel.findOne({ username: username });
 	}
+
+	async findById(id: String):Promise<IUser> {
+		return this.userModel.findOne({"account.id":id});
+	}
+
+	async create(user: IUser): Promise<IUser> {
+		const newUser = new this.userModel(user);
+		return newUser.save();
+	}
+
+	async userExists(user: IUser): Promise<boolean> {
+		const doc = await this.userModel.find({"account.id":user.account.id}).limit(1);
+		return doc != null;
+	}
 }

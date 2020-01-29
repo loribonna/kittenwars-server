@@ -6,6 +6,8 @@ import { AppModule } from './app.module';
 import { ValidationPipe } from '@nestjs/common';
 import passport = require('passport');
 import * as session from 'express-session';
+import { MONGODB_CONNECTION_URI } from './constants/constants';
+const MongoStore = require('connect-mongo')(session);
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
@@ -13,13 +15,23 @@ async function bootstrap() {
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({transform: true}));
 
+  app.use(session({
+    secret: process.env.EXPRESS_SECRET,
+    saveUninitialized: true,
+    resave: true
+  }));
 	app.use(passport.initialize());
   app.use(passport.session());
-	app.use(session({
-    secret: process.env.EXPRESS_SECRET,
-    resave: true,
-    saveUninitialized: true
-  }));
+
+
+  passport.serializeUser((user, done) => {
+    done(null, user);
+  });
+
+  passport.deserializeUser((user, done) => {
+    done(null, user);
+  });
+	
 
 	await app.listen(3000);
 }
