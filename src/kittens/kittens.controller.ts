@@ -63,7 +63,6 @@ export class KittensController {
 	)
 	async insertKitten(@UploadedFile() uplKitten: CreateImageDto) {
 		const savedKitten = await this.kittenService.create(uplKitten);
-		console.log(savedKitten);
 		return savedKitten;
 	}
 }

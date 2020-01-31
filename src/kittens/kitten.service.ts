@@ -17,31 +17,57 @@ export class KittenService {
 			savedName: file.filename,
 			size: file.size,
 			votes: 0,
+			approved: false,
 		};
 		const kitten = new this.kittenModel(obj);
 		return kitten.save();
 	}
 
 	async findByName(kittenName: String): Promise<IKitten> {
-		return this.kittenModel.findOne({ savedName: kittenName });
+		return this.kittenModel.findOne({
+			savedName: kittenName,
+			approved: { $exists: true, $eq: true },
+		});
+	}
+
+	async findById(kittenID: String): Promise<IKitten> {
+		return this.kittenModel.findOne({
+			_id: kittenID,
+			approved: { $exists: true, $eq: true },
+		});
 	}
 
 	async getRandomKittens(size = 1): Promise<IKitten[]> {
-		return this.kittenModel.aggregate([{ $sample: { size: size } }]);
+		return this.kittenModel.aggregate([
+			{ $match: { approved: { $exists: true, $eq: true } } },
+			{ $sample: { size: size } },
+		]);
 	}
 
-	async voteKitten(kittenSavedName: String): Promise<IKitten> {
+	async voteKitten(kittenID: String): Promise<IKitten> {
 		return this.kittenModel.findOneAndUpdate(
-			{ savedName: kittenSavedName },
+			{ _id: kittenID },
 			{ $inc: { votes: 1 } },
 			{ new: true },
 		);
 	}
 
 	async getMostLikedKittens(limit: number = 1) {
-		if(limit<=0){
+		if (limit <= 0) {
 			return;
 		}
-		return this.kittenModel.find().sort({'votes':'desc'}).limit(limit);
+		return this.kittenModel
+			.find({ approved: { $exists: true, $eq: true } })
+			.sort({ votes: 'desc' })
+			.limit(limit);
+	}
+
+	async getNotApprovedKittens() {
+		return this.kittenModel.find({
+			$or: [
+				{ approved: { $exists: false } },
+				{ approved: { $exists: true, $eq: false } },
+			],
+		});
 	}
 }

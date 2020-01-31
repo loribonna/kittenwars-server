@@ -5,6 +5,11 @@ import { Response } from 'express';
 export class AppController {
 	constructor() {}
 
+	@Get('')
+	redirectToKittens(@Res() res: Response) {
+		res.redirect('/app/kittens');
+	}
+
 	@Get('*')
 	getApp(@Res() res: Response) {
 		res.sendFile('index.html', { root: './statics' });
@@ -13,10 +18,10 @@ export class AppController {
 
 @Controller()
 export class BaseController {
-	constructor(){}
+	constructor() {}
 
 	@Get()
-	redirectToApp(@Res() res:Response){
-		res.redirect('/app')
+	redirectToApp(@Res() res: Response) {
+		res.redirect('/app/kittens');
 	}
 }

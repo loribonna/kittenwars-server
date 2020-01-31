@@ -9,6 +9,7 @@ export interface IKitten {
     savedName: String;
     size: Number;
     votes: Number;
+    approved: Boolean;
 }
 
 export interface IKittenExtended extends Document, IKitten {}

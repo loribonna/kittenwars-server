@@ -13,5 +13,9 @@ export const KittenSchema = new mongoose.Schema({
 	votes: {
 		type: Number,
 		default: 0
+	},
+	approved: {
+		type: Boolean,
+		default: false
 	}
 });

@@ -5,16 +5,23 @@ import {
 	HttpStatus,
 	Put,
 	Body,
-	UseGuards
+	UseGuards,
+	Req,
 } from '@nestjs/common';
 import { KittenService } from 'src/kittens/kitten.service';
 import { IKitten } from 'src/interfaces/kitten.interface';
-import { KittenInfoDto } from 'src/dto/kitten-info.dto';
+import { KittenVoteDto } from 'src/dto/kitten-vote.dto';
 import { AuthGuard } from '@nestjs/passport';
+import { UsersService } from 'src/users/users.service';
+import { Request } from 'express';
+import { IUser } from 'src/interfaces/users.interface';
 
 @Controller('vote')
 export class VoteController {
-	constructor(private readonly kittenService: KittenService) {}
+	constructor(
+		private readonly kittenService: KittenService,
+		private readonly userService: UsersService,
+	) {}
 
 	@Get()
 	@UseGuards(AuthGuard('jwt'))
@@ -32,9 +39,27 @@ export class VoteController {
 
 	@Put()
 	@UseGuards(AuthGuard('jwt'))
-	async voteKittens(@Body() kitten: KittenInfoDto): Promise<IKitten> {
+	async voteKittens(
+		@Req() req: Request,
+		@Body() vote: KittenVoteDto,
+	): Promise<Boolean> {
 		try {
-			return this.kittenService.voteKitten(kitten.savedName);
+			const [user, kittenVoted, kittenA, kittenB] = await Promise.all([
+				this.userService.findById((<any>req.user).userId),
+				this.kittenService.voteKitten(vote.kittenVoted),
+				this.kittenService.findById(vote.kittenA),
+				this.kittenService.findById(vote.kittenB),
+			]);
+
+			const winnerKitten =
+				kittenA.votes > kittenB.votes ? kittenA : kittenB;
+			if (kittenVoted.savedName === winnerKitten.savedName) {
+				this.userService.incUserScore(user);
+				return true;
+			} else {
+				this.userService.decUserScore(user);
+				return false;
+			}
 		} catch (e) {
 			console.error(e);
 			throw new HttpException(

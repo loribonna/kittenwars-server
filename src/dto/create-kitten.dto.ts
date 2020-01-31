@@ -1,4 +1,4 @@
-import { Length, Min, Max, IsInt, IsDate, IsMongoId } from 'class-validator';
+import { Length, Min, Max, IsInt, IsDate, IsMongoId, IsOptional } from 'class-validator';
 import { MAX_IMAGE_SIZE } from './create-image.dto';
 import { IKitten } from '../interfaces/kitten.interface';
 
@@ -30,4 +30,7 @@ export class CreateKittenDto implements IKitten {
 	@IsInt()
 	@Min(0)
 	votes: Number;
+
+	@IsOptional()
+	approved: Boolean;
 }

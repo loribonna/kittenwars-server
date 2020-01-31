@@ -10,6 +10,14 @@ export class UsersService {
 		private readonly userModel: Model<IUserExtended>,
 	) {}
 
+	async _updateUserScore(user: IUser, update: -1|1): Promise<IUser> {
+		return this.userModel.findOneAndUpdate(
+			{ 'account.id': user.account.id },
+			{ $inc: { score: update } },
+			{ new: true },
+		);
+	}
+
 	async findOne(username: string): Promise<IUser> {
 		return this.userModel.findOne({ username: username });
 	}
@@ -28,5 +36,27 @@ export class UsersService {
 			.find({ 'account.id': user.account.id })
 			.limit(1);
 		return doc != null;
+	}
+
+	async getScoreBoard(limit: number = 10): Promise<IUser[]> {
+		return this.userModel
+			.find()
+			.sort({ score: 'desc' })
+			.limit(limit);
+	}
+
+	async getPositionScoreBoard(user: IUser): Promise<number> {
+		return this.userModel
+			.find({ score: { $gt: user.score } })
+			.count()
+			.then(count => count + 1);
+	}
+
+	async incUserScore(user: IUser): Promise<IUser> {
+		return this._updateUserScore(user, 1);
+	}
+
+	async decUserScore(user: IUser) :Promise<IUser> {
+		return this._updateUserScore(user, -1);
 	}
 }
