@@ -7,7 +7,9 @@ import {
 	UseInterceptors,
 	UploadedFile,
 	Param,
-	UseGuards
+	UseGuards,
+	InternalServerErrorException,
+	Req
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateImageDto } from 'src/dto/create-image.dto';
@@ -61,7 +63,10 @@ export class KittensController {
 			}),
 		}),
 	)
-	async insertKitten(@UploadedFile() uplKitten: CreateImageDto) {
+	async insertKitten(@Req() req:Request, @UploadedFile() uplKitten: CreateImageDto) {
+		if(!uplKitten){
+			throw new InternalServerErrorException('No file provided');
+		}
 		const savedKitten = await this.kittenService.create(uplKitten);
 		return savedKitten;
 	}

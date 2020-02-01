@@ -10,7 +10,7 @@ export class UsersService {
 		private readonly userModel: Model<IUserExtended>,
 	) {}
 
-	async _updateUserScore(user: IUser, update: -1|1): Promise<IUser> {
+	async _updateUserScore(user: IUser, update: -1 | 1): Promise<IUser> {
 		return this.userModel.findOneAndUpdate(
 			{ 'account.id': user.account.id },
 			{ $inc: { score: update } },
@@ -48,7 +48,7 @@ export class UsersService {
 	async getPositionScoreBoard(user: IUser): Promise<number> {
 		return this.userModel
 			.find({ score: { $gt: user.score } })
-			.count()
+			.countDocuments()
 			.then(count => count + 1);
 	}
 
@@ -56,7 +56,7 @@ export class UsersService {
 		return this._updateUserScore(user, 1);
 	}
 
-	async decUserScore(user: IUser) :Promise<IUser> {
+	async decUserScore(user: IUser): Promise<IUser> {
 		return this._updateUserScore(user, -1);
 	}
 }

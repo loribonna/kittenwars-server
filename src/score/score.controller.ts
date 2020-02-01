@@ -11,9 +11,15 @@ export class ScoreController {
 		private readonly kittenService: KittenService,
 	) {}
 
-	@Get('kitten')
+	@Get('best')
 	@UseGuards(AuthGuard('jwt'))
 	async getMostLikedKittens() {
         return this.kittenService.getMostLikedKittens();
+	}
+
+	@Get('worst')
+	@UseGuards(AuthGuard('jwt'))
+	async getLeastLikedKittens() {
+        return this.kittenService.getLeastLikedKittens();
 	}
 }

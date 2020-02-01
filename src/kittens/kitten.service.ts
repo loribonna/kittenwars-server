@@ -62,6 +62,16 @@ export class KittenService {
 			.limit(limit);
 	}
 
+	async getLeastLikedKittens(limit: number = 1) {
+		if (limit <= 0) {
+			return;
+		}
+		return this.kittenModel
+			.find({ approved: { $exists: true, $eq: true } })
+			.sort({ votes: 'asc' })
+			.limit(limit);
+	}
+
 	async getNotApprovedKittens() {
 		return this.kittenModel.find({
 			$or: [

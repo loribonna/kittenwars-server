@@ -1,4 +1,4 @@
-import { Length, Min, Max, IsInt, IsDate, IsMongoId, Equals } from 'class-validator';
+import { Length, Max, IsInt, Equals } from 'class-validator';
 
 export const MAX_IMAGE_SIZE = 16 * 1024 * 1024 - 1; // 16 MB
 

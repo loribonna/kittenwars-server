@@ -8,10 +8,14 @@ import passport = require('passport');
 import * as session from 'express-session';
 import { MONGODB_CONNECTION_URI } from './constants/constants';
 const MongoStore = require('connect-mongo')(session);
+import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   
+  app.use(bodyParser.json({limit: '17mb'}));
+  app.use(bodyParser.urlencoded({limit: "17mb", extended: true, parameterLimit:50000}));
+
   app.enableCors();
   app.useGlobalPipes(new ValidationPipe({transform: true}));
 
