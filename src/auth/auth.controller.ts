@@ -44,4 +44,21 @@ export class AuthController {
 		};
 		passport.authenticate('google', params)(req, res, next);
 	}
+
+	@Get('jwt_check')
+	@UseGuards(AuthGuard('jwt'))
+	async checkJWTToken(@Req() req: Request) {
+		const userId: string = (<any>req.user).userId;
+		if (userId) {
+			return { status: 'ok' };
+		} else {
+			throw new UnauthorizedException('JWT Token invalid');
+		}
+	}
+
+	@Get('logout')
+	async logout(@Req() req: Request, @Res() res: Response) {
+		req.logout();
+		res.redirect('/app');
+	}
 }
