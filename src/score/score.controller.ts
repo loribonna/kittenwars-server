@@ -1,8 +1,17 @@
-import { Controller, Get, UseGuards, Req } from '@nestjs/common';
-import { AuthGuard } from '@nestjs/passport';
+import {
+	Controller,
+	Get,
+	UseGuards,
+	Req,
+	Param,
+	Res,
+	UnauthorizedException,
+} from '@nestjs/common';
 import { UsersService } from 'src/users/users.service';
-import { Request } from 'express';
+import { Response } from 'express';
 import { KittenService } from 'src/kittens/kitten.service';
+import { fetchImageAndSend } from 'src/helpers/fetch-img';
+var fs = require('fs');
 
 @Controller('score')
 export class ScoreController {
@@ -12,14 +21,41 @@ export class ScoreController {
 	) {}
 
 	@Get('best')
-	@UseGuards(AuthGuard('jwt'))
 	async getMostLikedKittens() {
-        return this.kittenService.getMostLikedKittens();
+		return this.kittenService.getMostLikedKittens();
 	}
 
 	@Get('worst')
-	@UseGuards(AuthGuard('jwt'))
 	async getLeastLikedKittens() {
-        return this.kittenService.getLeastLikedKittens();
+		return this.kittenService.getLeastLikedKittens();
+	}
+
+	@Get('worst/:name')
+	async getLeastLikedKittenImg(
+		@Param('name') kittenName: string,
+		@Res() res: Response,
+	) {
+		const kittens = await this.kittenService.getLeastLikedKittens();
+		if (kittens.findIndex(k => k.savedName === kittenName) < 0) {
+			throw new UnauthorizedException(`Kitten ${kittenName} is not a valid worst kitten`);
+		}else{
+			return fetchImageAndSend(kittenName, res);
+
+		}
+	}
+
+	@Get('best/:name')
+	async getMostLikedKittenImg(
+		@Param('name') kittenName: string,
+		@Res() res: Response,
+	) {
+		const kittens = await this.kittenService.getMostLikedKittens();
+		if (kittens.findIndex(k => k.savedName === kittenName) < 0) {
+			throw new UnauthorizedException(
+				`Kitten ${kittenName} is not a valid best kitten`,
+			);
+		} else {
+			return fetchImageAndSend(kittenName, res);
+		}
 	}
 }
