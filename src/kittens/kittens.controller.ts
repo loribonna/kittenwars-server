@@ -63,6 +63,7 @@ export class KittensController {
 		if (!uplKitten) {
 			throw new InternalServerErrorException('No file provided');
 		}
+		console.log(uplKitten.filename);
 		const savedKitten = await this.kittenService.create(uplKitten);
 		return savedKitten;
 	}

@@ -9,6 +9,7 @@ export interface IUser {
 		token: String;
 	}
 	score: Number;
+	isAdmin?: Boolean;
 }
 
 export interface IUserExtended extends Document, IUser {}

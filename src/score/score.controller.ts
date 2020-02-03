@@ -16,8 +16,7 @@ var fs = require('fs');
 @Controller('score')
 export class ScoreController {
 	constructor(
-		private readonly userService: UsersService,
-		private readonly kittenService: KittenService,
+		private readonly kittenService: KittenService
 	) {}
 
 	@Get('best')

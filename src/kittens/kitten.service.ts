@@ -3,6 +3,7 @@ import { Injectable, Inject } from '@nestjs/common';
 import { IKitten, IKittenExtended } from '../interfaces/kitten.interface';
 import { KITTEN_MODEL_INJECTION_KEY } from 'src/constants/constants';
 import { CreateImageDto } from 'src/dto/create-image.dto';
+import { deleteImage } from 'src/helpers/delete-img';
 
 @Injectable()
 export class KittenService {
@@ -79,5 +80,24 @@ export class KittenService {
 				{ approved: { $exists: true, $eq: false } },
 			],
 		});
+	}
+
+	async approveKitten(id: String) {
+		return this.kittenModel.findOneAndUpdate(
+			{
+				_id: id,
+			},
+			{ approved: true },
+			{ new: true },
+		);
+	}
+
+	async rejectKitten(id: String) {
+		const kitten = await this.kittenModel.findOne({_id: id});
+
+		return Promise.all([
+			deleteImage(kitten.savedName),
+			this.kittenModel.deleteOne({ _id: id })
+		]);
 	}
 }

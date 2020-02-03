@@ -2,8 +2,8 @@ import * as mongoose from 'mongoose';
 
 const UserAccountSchema = new mongoose.Schema({
 	id: String,
-	token: String
-})
+	token: String,
+});
 
 export const UsersSchema = new mongoose.Schema({
 	username: String,
@@ -15,9 +15,8 @@ export const UsersSchema = new mongoose.Schema({
 	method: String,
 	score: {
 		type: Number,
-		default: 0
+		default: 0,
 	},
-	account: UserAccountSchema
+	account: UserAccountSchema,
+	isAdmin: { type: Boolean, default: false },
 });
-
-

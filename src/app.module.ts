@@ -8,6 +8,7 @@ import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import { ScoreController } from './score/score.controller';
 import { ScoreModule } from './score/score.module';
+import { AdminModule } from './admin/admin.module';
 
 @Module({
 	imports: [
@@ -18,7 +19,8 @@ import { ScoreModule } from './score/score.module';
 		ServeStaticModule.forRoot({
 			rootPath: join(__dirname,'..','statics')
 		}),
-		ScoreModule
+		ScoreModule,
+		AdminModule
 	],
 	controllers: [AppController, BaseController, ScoreController]
 })
