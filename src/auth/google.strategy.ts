@@ -41,7 +41,6 @@ export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
 
 			done(null, newUser);
 		} catch (e) {
-			console.log(e);
 			done(e, false);
 		}
 	}

@@ -10,6 +10,15 @@ export class AuthService {
 		private readonly jwtService: JwtService,
 	) {}
 
+	createJWTToken(profile: IUser): { jwt: string } {
+		const payload = {
+			sub: profile.account.id,
+			username: profile.username,
+		};
+
+		return { jwt: this.jwtService.sign(payload) };
+	}
+
 	async handlePassportAuth(profile: IUser): Promise<{ jwt: string }> {
 		try {
 			let user = await this.userService.findById(profile.account.id);
@@ -18,12 +27,7 @@ export class AuthService {
 				user = await this.userService.create(profile);
 			}
 
-			const payload = {
-				sub: profile.account.id,
-				username: profile.username,
-			};
-
-			return { jwt: this.jwtService.sign(payload) };
+			return this.createJWTToken(profile);
 		} catch (e) {
 			throw new InternalServerErrorException('validateOAuthLogin', e);
 		}

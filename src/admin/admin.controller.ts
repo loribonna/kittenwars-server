@@ -52,7 +52,6 @@ export class AdminController {
 			const isAdmin = await this._checkAdminUser(req);
 
 			if (isAdmin) {
-                console.log(val);
 				if (val.accepted) {
 					this.kittenService.approveKitten(val.kittenId);
 				} else {
