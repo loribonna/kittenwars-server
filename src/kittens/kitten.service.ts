@@ -4,6 +4,7 @@ import { IKitten, IKittenExtended } from '../interfaces/kitten.interface';
 import { KITTEN_MODEL_INJECTION_KEY } from 'src/constants/constants';
 import { CreateImageDto } from 'src/dto/create-image.dto';
 import { deleteImage } from 'src/helpers/delete-img';
+import { CreateKittenDto } from 'src/dto/create-kitten.dto';
 
 @Injectable()
 export class KittenService {
@@ -12,8 +13,10 @@ export class KittenService {
 		private readonly kittenModel: Model<IKittenExtended>,
 	) {}
 
-	async create(file: CreateImageDto): Promise<IKitten> {
+	async create(file: CreateImageDto, kittenInfo: CreateKittenDto): Promise<IKitten> {
 		const obj: IKitten = {
+			name: kittenInfo.name,
+			age: kittenInfo.age,
 			originalName: file.originalName,
 			savedName: file.filename,
 			size: file.size,

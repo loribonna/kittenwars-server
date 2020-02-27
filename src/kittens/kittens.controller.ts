@@ -10,6 +10,8 @@ import {
 	UseGuards,
 	InternalServerErrorException,
 	Req,
+	Body,
+	UsePipes,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { CreateImageDto } from 'src/dto/create-image.dto';
@@ -19,6 +21,7 @@ import { KittenService } from './kitten.service';
 import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { fetchImageAndSend } from 'src/helpers/fetch-img';
+import { CreateKittenDtoValidatorPipe } from 'src/dto/create-kitten.dto';
 
 interface Survey {}
 
@@ -39,6 +42,8 @@ export class KittensController {
 	}
 
 	@Post()
+	@UsePipes(new CreateKittenDtoValidatorPipe())
+	@UseGuards(AuthGuard('jwt'))
 	@UseInterceptors(
 		FileInterceptor('image', {
 			storage: diskStorage({
@@ -57,13 +62,16 @@ export class KittensController {
 		}),
 	)
 	async insertKitten(
-		@Req() req: Request,
+		@Body() body,
 		@UploadedFile() uplKitten: CreateImageDto,
 	) {
 		if (!uplKitten) {
 			throw new InternalServerErrorException('No file provided');
 		}
-		const savedKitten = await this.kittenService.create(uplKitten);
+		const savedKitten = await this.kittenService.create(
+			uplKitten,
+			body.kitten,
+		);
 		return savedKitten;
 	}
 }

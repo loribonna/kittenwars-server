@@ -1,36 +1,44 @@
-import { Length, Min, Max, IsInt, IsDate, IsMongoId, IsOptional } from 'class-validator';
-import { MAX_IMAGE_SIZE } from './create-image.dto';
-import { IKitten } from '../interfaces/kitten.interface';
+import { Length, Min, Max, IsInt, IsOptional } from 'class-validator';
+import { IKitten } from 'src/interfaces/kitten.interface';
+import { DtoBase } from './dto.base';
+import {
+	PipeTransform,
+	Injectable,
+	ArgumentMetadata,
+	BadRequestException,
+} from '@nestjs/common';
 
+export class CreateKittenDto extends DtoBase {
+	constructor(kitten: Partial<IKitten>) {
+		super();
+		this.name = kitten.name;
+		this.age = kitten.age;
+	}
 
-export class CreateKittenDto implements IKitten {
 	@Length(1, 40)
 	name: String;
 
+	@IsOptional()
 	@IsInt()
 	@Min(0)
 	@Max(30)
 	age: Number;
+}
 
-	@IsDate()
-	insertDate: Date;
-
-    @IsMongoId()
-    id: String;
-    
-    savedName: String;
-
-    @Length(1, 40)
-    originalName: String;
-
-    @IsInt()
-	@Max(MAX_IMAGE_SIZE)
-	size: Number;
-
-	@IsInt()
-	@Min(0)
-	votes: Number;
-
-	@IsOptional()
-	approved: Boolean;
+@Injectable()
+export class CreateKittenDtoValidatorPipe implements PipeTransform {
+	async transform(value: any, metadata: ArgumentMetadata) {
+		if (value.kitten && typeof value.kitten === 'string') {
+			const kitten = JSON.parse(value.kitten);
+			const dto = new CreateKittenDto(kitten);
+			try {
+				await dto.validateOrReject();
+				return { ...value, kitten: kitten };
+			} catch (e) {
+				throw new BadRequestException('Kitten validation failed');
+			}
+		} else {
+			throw new BadRequestException('Kitten validation failed');
+		}
+	}
 }
