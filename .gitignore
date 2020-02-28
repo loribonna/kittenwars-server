@@ -38,6 +38,3 @@ lerna-debug.log*
 
 # Environment
 .env
-
-# Static builded
-/statics

@@ -1,5 +1,5 @@
 import * as dotenv from 'dotenv';
-dotenv.config({path:'src/.env'});
+dotenv.config({ path: 'src/.env' });
 
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
@@ -11,33 +11,39 @@ const MongoStore = require('connect-mongo')(session);
 import * as bodyParser from 'body-parser';
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
-  
-  app.use(bodyParser.json({limit: '17mb'}));
-  app.use(bodyParser.urlencoded({limit: "17mb", extended: true, parameterLimit:50000}));
+	const app = await NestFactory.create(AppModule);
 
-  app.enableCors();
-  app.useGlobalPipes(new ValidationPipe({transform: true}));
+	app.use(bodyParser.json({ limit: '17mb' }));
+	app.use(
+		bodyParser.urlencoded({
+			limit: '17mb',
+			extended: true,
+			parameterLimit: 50000,
+		}),
+	);
 
-  app.use(session({
-    secret: process.env.EXPRESS_SECRET,
-    saveUninitialized: true,
-    resave: true
-  }));
+	app.enableCors();
+	app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+	app.use(
+		session({
+			secret: process.env.EXPRESS_SECRET,
+			saveUninitialized: true,
+			resave: true,
+		}),
+	);
 	app.use(passport.initialize());
-  app.use(passport.session());
+	app.use(passport.session());
 
+	passport.serializeUser((user, done) => {
+		done(null, user);
+	});
 
-  passport.serializeUser((user, done) => {
-    done(null, user);
-  });
+	passport.deserializeUser((user, done) => {
+		done(null, user);
+	});
 
-  passport.deserializeUser((user, done) => {
-    done(null, user);
-  });
-	
-
-	await app.listen(3000);
+	await app.listen(process.env.PORT || 3000);
 }
 
 bootstrap();

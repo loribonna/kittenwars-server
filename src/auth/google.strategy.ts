@@ -1,16 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { NextFunction } from 'express';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from './auth.service';
 import { IUser } from 'src/interfaces/users.interface';
 import { AuthMode, BASE_URL } from 'src/constants/constants';
-import * as passport from 'passport';
-import { ConfigService } from '@nestjs/config';
 import {
-	Profile,
 	Strategy,
 	StrategyOptionWithRequest,
-	VerifyFunctionWithRequest,
 } from 'passport-google-oauth20';
 
 @Injectable()
@@ -19,7 +14,7 @@ export class GoogleAuthStrategy extends PassportStrategy(Strategy, 'google') {
 		super(<StrategyOptionWithRequest>{
 			clientID: process.env.GOOGLE_OAUTH_CLIENT_ID,
 			clientSecret: process.env.GOOGLE_OAUTH_CLIENT_SECRET,
-			callbackURL: 'http://' + BASE_URL + '/auth/google/callback',
+			callbackURL: BASE_URL + '/auth/google/callback',
 			passReqToCallback: true,
 			scope: ['profile'],
 		});

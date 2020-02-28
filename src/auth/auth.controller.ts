@@ -16,7 +16,7 @@ import { AuthService } from './auth.service';
 import { NextFunction, Request, Response } from 'express';
 import passport = require('passport');
 import { AuthGuard } from '@nestjs/passport';
-import { BASE_URL, AuthMode } from 'src/constants/constants';
+import { AuthMode, BASE_URL } from 'src/constants/constants';
 import { OAuth2Client } from 'google-auth-library';
 import { IUser } from 'src/interfaces/users.interface';
 
@@ -31,7 +31,7 @@ export class AuthController {
 	async handleOauthCallback(@Req() req: Request, @Res() res: Response) {
 		const jwt: string = (<any>req.user).jwt;
 
-		if (jwt) res.redirect('http://' + BASE_URL + '/app/jwt/' + jwt);
+		if (jwt) res.redirect(BASE_URL + '/app/jwt/' + jwt);
 		else {
 			throw new InternalServerErrorException('JWT error');
 		}
@@ -47,7 +47,7 @@ export class AuthController {
 		const params = {
 			session: false,
 			scope: ['profile'],
-			callbackURL: `http://` + BASE_URL + `/auth/google/callback`,
+			callbackURL: BASE_URL + `/auth/google/callback`,
 		};
 
 		passport.authenticate('google', params)(req, res, next);
