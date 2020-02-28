@@ -1,12 +1,27 @@
-import { Controller, Get } from '@nestjs/common';
-import { AppService } from './app.service';
+import { Controller, Get, Res } from '@nestjs/common';
+import { Response } from 'express';
+
+@Controller('app')
+export class AppController {
+	constructor() {}
+
+	@Get('')
+	redirectToKittens(@Res() res: Response) {
+		res.redirect('/app/kittens');
+	}
+
+	@Get('*')
+	getApp(@Res() res: Response) {
+		res.sendFile('index.html', { root: './statics' });
+	}
+}
 
 @Controller()
-export class AppController {
-  constructor(private readonly appService: AppService) {}
+export class BaseController {
+	constructor() {}
 
-  @Get()
-  getHello(): string {
-    return this.appService.getHello();
-  }
+	@Get()
+	redirectToApp(@Res() res: Response) {
+		res.redirect('/app/kittens');
+	}
 }
