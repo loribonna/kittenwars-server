@@ -16,9 +16,9 @@ import { AuthService } from './auth.service';
 import { NextFunction, Request, Response } from 'express';
 import passport = require('passport');
 import { AuthGuard } from '@nestjs/passport';
-import { AuthMode, BASE_URL } from 'src/constants/constants';
+import { BASE_URL, AuthMode } from '../constants/constants';
 import { OAuth2Client } from 'google-auth-library';
-import { IUser } from 'src/interfaces/users.interface';
+import { IUser } from '../interfaces/users.interface';
 
 @Controller('auth')
 export class AuthController {
@@ -71,29 +71,26 @@ export class AuthController {
 	}
 
 	@Post('google/token')
-	async checkGoogleToken(
-		@Query('id_token') token: string
-	) {
-		try{
+	async checkGoogleToken(@Query('id_token') token: string) {
+		try {
 			const ticket = await this.client.verifyIdToken({
 				idToken: token,
-				audience: process.env.GOOGLE_APP_CLIENT_ID
+				audience: process.env.GOOGLE_APP_CLIENT_ID,
 			});
 			const payload = ticket.getPayload();
-			
+
 			const profile: IUser = {
 				username: payload.name,
 				account: {
 					id: payload.sub,
-					token: token
+					token: token,
 				},
 				score: 0,
 				method: AuthMode.google,
-			}
+			};
 			return this.auth.handlePassportAuth(profile);
-		}catch(e){
+		} catch (e) {
 			throw new UnauthorizedException('Invalid ticket');
 		}
-		
 	}
 }

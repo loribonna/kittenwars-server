@@ -8,13 +8,12 @@ import {
 	UseGuards,
 	Req,
 } from '@nestjs/common';
-import { KittenService } from 'src/kittens/kitten.service';
-import { IKitten } from 'src/interfaces/kitten.interface';
-import { KittenVoteDto } from 'src/dto/kitten-vote.dto';
+import { KittenService } from '../kittens/kitten.service';
+import { IKitten } from '../interfaces/kitten.interface';
+import { KittenVoteDto } from '../dto/kitten-vote.dto';
 import { AuthGuard } from '@nestjs/passport';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { Request } from 'express';
-import { IUser } from 'src/interfaces/users.interface';
 
 @Controller('vote')
 export class VoteController {

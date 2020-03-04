@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ScoreController } from './score.controller';
-import { KittensModule } from 'src/kittens/kittens.module';
+import { KittensModule } from '../kittens/kittens.module';
 
 @Module({
     imports: [KittensModule],

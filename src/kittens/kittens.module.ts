@@ -1,7 +1,7 @@
 import { Module } from '@nestjs/common';
 import { KittensController } from './kittens.controller';
 import { MulterModule } from '@nestjs/platform-express';
-import { DatabaseModule } from 'src/database/database.module';
+import { DatabaseModule } from '../database/database.module';
 import { KittenService } from './kitten.service';
 import { kittenProvider } from './kitten.provider';
 

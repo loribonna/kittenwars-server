@@ -9,12 +9,12 @@ import {
 	Body,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
-import { KittenService } from 'src/kittens/kitten.service';
-import { UsersService } from 'src/users/users.service';
+import { KittenService } from '../kittens/kitten.service';
+import { UsersService } from '../users/users.service';
 import { Request } from 'express';
-import { IUser } from 'src/interfaces/users.interface';
-import { IKitten } from 'src/interfaces/kitten.interface';
-import { KittenEvaluateDto } from 'src/dto/kitten-evaluate.dto';
+import { IUser } from '../interfaces/users.interface';
+import { IKitten } from '../interfaces/kitten.interface';
+import { KittenEvaluateDto } from '../dto/kitten-evaluate.dto';
 
 @Controller('admin')
 export class AdminController {

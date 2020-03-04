@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { IUser } from 'src/interfaces/users.interface';
-import { AuthMode, BASE_URL } from 'src/constants/constants';
+import { IUser } from '../interfaces/users.interface';
+import { AuthMode, BASE_URL } from '../constants/constants';
 import {
 	Strategy,
 	StrategyOptionWithRequest,
