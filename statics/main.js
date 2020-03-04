@@ -6297,7 +6297,7 @@ goog.html.TrustedResourceUrl.unwrapTrustedURL = function(a) {
 };
 goog.html.TrustedResourceUrl.format = function(a, b) {
   var c = goog.string.Const.unwrap(a);
-  if (!goog.html.TrustedResourceUrl.BASE_URL_WITH_PORT_.test(c)) {
+  if (!goog.html.TrustedResourceUrl.BASE_URL_.test(c)) {
     throw Error("Invalid TrustedResourceUrl format: " + c);
   }
   var d = c.replace(goog.html.TrustedResourceUrl.FORMAT_MARKER_, function(a, d) {
@@ -6310,7 +6310,7 @@ goog.html.TrustedResourceUrl.format = function(a, b) {
   return goog.html.TrustedResourceUrl.createTrustedResourceUrlSecurityPrivateDoNotAccessOrElse(d);
 };
 goog.html.TrustedResourceUrl.FORMAT_MARKER_ = /%{(\w+)}/g;
-goog.html.TrustedResourceUrl.BASE_URL_WITH_PORT_ = /^((https:)?\/\/[0-9a-z.:[\]-]+\/|\/[^/\\]|[^:/\\%]+\/|[^:/\\%]*[?#]|about:blank#)/i;
+goog.html.TrustedResourceUrl.BASE_URL_ = /^((https:)?\/\/[0-9a-z.:[\]-]+\/|\/[^/\\]|[^:/\\%]+\/|[^:/\\%]*[?#]|about:blank#)/i;
 goog.html.TrustedResourceUrl.URL_PARAM_PARSER_ = /^([^?#]*)(\?[^#]*)?(#[\s\S]*)?/;
 goog.html.TrustedResourceUrl.formatWithParams = function(a, b, c, d) {
   return goog.html.TrustedResourceUrl.format(a, b).cloneWithParams(c, d);
@@ -13620,7 +13620,7 @@ if (false) {} else {
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
+/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19792,7 +19792,7 @@ class Header extends React.Component {
         this.props.history.push(page);
     }
     renderLoggedUser() {
-        return (React.createElement("nav", { className: "navbar navbar-expand-lg navbar-light bg-light" },
+        return (React.createElement("nav", { className: "navbar navbar-expand-lg navbar-light custom-header" },
             React.createElement("div", { className: "mr-auto" },
                 React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.kittens]) }, "Kittens"),
                 React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.score]) }, "Score"),
@@ -19801,7 +19801,7 @@ class Header extends React.Component {
             React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.logout]) }, "Logout")));
     }
     renderUnloggedUser() {
-        return (React.createElement("nav", { className: "navbar navbar-expand-lg navbar-light bg-light" },
+        return (React.createElement("nav", { className: "navbar navbar-expand-lg navbar-light custom-header" },
             React.createElement("div", { className: "mr-auto" },
                 React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.score]) }, "Score")),
             React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.login]) }, "Login")));
@@ -19933,7 +19933,7 @@ class ImageDisplay extends React.Component {
         }
     }
     render() {
-        return (React.createElement("div", { className: "image-container" }, React.createElement("img", { key: this.state.imageID, className: this.state.imgClass, src: this.getImg(), onClick: this.imageClick.bind(this) })));
+        return (React.createElement("div", { className: "image-container" }, React.createElement("img", { style: this.props.style, key: this.state.imageID, className: this.state.imgClass, src: this.getImg(), onClick: this.imageClick.bind(this) })));
     }
 }
 exports.ImageDisplay = ImageDisplay;
@@ -19959,7 +19959,7 @@ var __importStar = (this && this.__importStar) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 const React = __importStar(__webpack_require__(/*! react */ "react"));
-class Input extends React.Component {
+class TextInput extends React.Component {
     constructor(props) {
         super(props);
         this._isMounted = false;
@@ -19985,10 +19985,11 @@ class Input extends React.Component {
             this.props.label && (React.createElement("label", { style: { paddingRight: 2 } },
                 this.props.label,
                 ' ')),
-            React.createElement("input", { type: "text", value: this.state.value, onChange: this.handleChange.bind(this) })));
+            React.createElement("input", { disabled: this.props.disabled, type: "text", value: this.state.value, onChange: this.handleChange.bind(this) }),
+            this.props.error && React.createElement("div", { style: { color: "red" } }, "INPUT ERROR")));
     }
 }
-exports.Input = Input;
+exports.TextInput = TextInput;
 
 
 /***/ }),
@@ -20519,11 +20520,12 @@ function KittenElement(kitten) {
 class Admin extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { kittens: [] };
+        this.state = { kittens: [], loading: true };
     }
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getPendingImages();
+            this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
         });
     }
     getPendingImages() {
@@ -20564,11 +20566,27 @@ class Admin extends React.Component {
         });
     }
     render() {
+        if (this.state.loading) {
+            return React.createElement("div", null, "Loading data...");
+        }
+        if (!this.state.kittens || this.state.kittens.length == 0) {
+            return React.createElement("div", null, "Nothing to do here!");
+        }
         return (React.createElement("div", null,
             React.createElement("ul", { className: "admin-kittens-container" }, this.state.kittens.map((kitten, index) => {
                 return (React.createElement("li", { key: index },
-                    KittenElement(kitten),
-                    React.createElement(image_1.ImageDisplay, { key: kitten.savedName, imageID: kitten.savedName }),
+                    React.createElement("div", { style: {
+                            overflow: 'hidden',
+                            objectFit: 'scale-down',
+                            height: '50%'
+                        } },
+                        KittenElement(kitten),
+                        React.createElement(image_1.ImageDisplay, { style: {
+                                maxWidth: '100%',
+                                height: 'auto',
+                                objectFit: 'scale-down',
+                                imageOrientation: 'from-image'
+                            }, key: kitten.savedName, imageID: kitten.savedName })),
                     React.createElement("button", { onClick: () => __awaiter(this, void 0, void 0, function* () {
                             return yield this.evaluateKitten(kitten, index)(true);
                         }) }, "ACCEPT"),
@@ -20766,7 +20784,7 @@ class Kittens extends React.Component {
         super(props);
         this._mounted = false;
         this._disableClick = false;
-        this.state = {};
+        this.state = { loading: true };
     }
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
@@ -20780,11 +20798,12 @@ class Kittens extends React.Component {
     loadRandomKittens() {
         return __awaiter(this, void 0, void 0, function* () {
             try {
+                this.setState(Object.assign(Object.assign({}, this.state), { loading: true }));
                 const token = helpers_1.getJWTToken();
                 const kittens = yield crud_1.get(statics_1.VOTE_URI, token);
                 if (Array.isArray(kittens) && kittens.length == 2) {
                     if (this._mounted) {
-                        this.setState(Object.assign(Object.assign({}, this.state), { leftKitten: kittens[0], rightKitten: kittens[1] }));
+                        this.setState(Object.assign(Object.assign({}, this.state), { leftKitten: kittens[0], rightKitten: kittens[1], loading: false }));
                     }
                 }
             }
@@ -20830,12 +20849,18 @@ class Kittens extends React.Component {
         });
     }
     render() {
+        if (this.state.loading) {
+            return React.createElement("div", null, "Loading Kittens...");
+        }
+        else if (!this.state.leftKitten && !this.state.rightKitten) {
+            return React.createElement("div", null, "Not enough Kittens to War!. INSERT A KITTEN");
+        }
         return (React.createElement("div", null,
-            React.createElement("div", { className: "row flex-column-reverse flex-md-row kittens-container" },
+            React.createElement("div", { className: "kittens-container" },
                 React.createElement("div", { className: "kittens-left" }, this.state.leftKitten && (React.createElement(image_1.ImageDisplay, { key: this.state.leftKitten.savedName, imageID: this.state.leftKitten.savedName, onClick: this.voteKitten.bind(this) }))),
                 React.createElement("div", { className: "kittens-right" }, this.state.rightKitten && (React.createElement(image_1.ImageDisplay, { key: this.state.rightKitten.savedName, imageID: this.state.rightKitten.savedName, onClick: this.voteKitten.bind(this) })))),
-            this.state.win != null && this.state.win && ("WIN"),
-            this.state.win != null && !this.state.win && ("LOSE")));
+            this.state.win != null && this.state.win && 'WIN',
+            this.state.win != null && !this.state.win && 'LOSE'));
     }
 }
 exports.Kittens = Kittens;
@@ -20932,12 +20957,13 @@ const image_1 = __webpack_require__(/*! ../../components/image/image */ "./src/c
 class Score extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { bestKittens: [], worstKittens: [] };
+        this.state = { bestKittens: [], worstKittens: [], loading: true };
     }
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.loadMostLikedKitten();
             yield this.loadLeastLikedKitten();
+            this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
         });
     }
     loadMostLikedKitten() {
@@ -20963,22 +20989,30 @@ class Score extends React.Component {
         });
     }
     render() {
-        return (React.createElement("div", null,
-            this.state.bestKittens && this.state.bestKittens.length > 0 && (React.createElement("div", null,
-                "BEST KITTEN WITH ",
-                this.state.bestKittens[0].votes,
-                " VOTES",
-                React.createElement("br", null),
-                React.createElement("div", { className: "score-image-container" },
-                    React.createElement(image_1.ImageDisplay, { fullUri: `/score/best/${this.state.bestKittens[0].savedName}` })))),
-            this.state.worstKittens && this.state.worstKittens.length > 0 && (React.createElement("div", null,
-                "WORST KITTEN WITH ",
-                this.state.worstKittens[0].votes,
-                ' ',
-                "VOTES",
-                React.createElement("br", null),
-                React.createElement("div", { className: "score-image-container" },
-                    React.createElement(image_1.ImageDisplay, { fullUri: `/score/worst/${this.state.worstKittens[0].savedName}` }))))));
+        if (this.state.loading) {
+            return React.createElement("div", null, "Loading...");
+        }
+        else if (!this.state.bestKittens && !this.state.worstKittens) {
+            return React.createElement("div", null, "Not enough Kittens to War!. INSERT A KITTEN");
+        }
+        const getKitten = (kittens, type) => !this.state.loading && kittens && kittens.length > 0 ? (React.createElement("div", { style: {
+                alignItems: 'center',
+                textTransform: 'uppercase'
+            } },
+            type,
+            " KITTEN WITH ",
+            kittens[0].votes,
+            " VOTES",
+            React.createElement("br", null),
+            React.createElement("div", { className: "score-image-container" },
+                React.createElement(image_1.ImageDisplay, { fullUri: `/score/${type}/${kittens[0].savedName}` })))) : null;
+        return (React.createElement("div", { className: "score-container" },
+            !this.state.loading &&
+                !this.state.bestKittens &&
+                !this.state.worstKittens &&
+                'NO KITTENS TO LOAD!',
+            getKitten(this.state.bestKittens, 'best'),
+            getKitten(this.state.worstKittens, 'worst')));
     }
 }
 exports.Score = Score;
@@ -21039,11 +21073,13 @@ class User extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
+            inputError: false,
             fileUpl: undefined,
             userScore: 0,
             scoreBoard: [],
             userPosition: -1,
-            kitten: {}
+            kitten: {},
+            upload: false
         };
     }
     componentDidMount() {
@@ -21103,22 +21139,28 @@ class User extends React.Component {
             if (!this.state.fileUpl) {
                 return;
             }
+            this.setState(Object.assign(Object.assign({}, this.state), { upload: true, inputError: false }));
+            const imageDto = new create_image_dto_1.CreateImageDto(this.state.fileUpl);
+            const kittenDto = new create_kitten_dto_1.CreateKittenDto(this.state.kitten);
             try {
-                const imageDto = new create_image_dto_1.CreateImageDto(this.state.fileUpl);
-                const kittenDto = new create_kitten_dto_1.CreateKittenDto(this.state.kitten);
                 yield Promise.all([
                     imageDto.validateOrReject(),
                     kittenDto.validateOrReject()
                 ]);
+            }
+            catch (e) {
+                this.setState(Object.assign(Object.assign({}, this.state), { inputError: true, upload: false }));
+            }
+            try {
                 const token = helpers_1.getJWTToken();
                 const formData = new FormData();
                 formData.append('image', this.state.fileUpl);
                 formData.append('kitten', JSON.stringify(this.state.kitten));
-                const insertedKitten = yield crud_1.post('/kittens', formData, token);
-                this.setState(Object.assign(Object.assign({}, this.state), { fileUpl: undefined, fileOk: true }));
+                yield crud_1.post('/kittens', formData, token);
+                this.setState(Object.assign(Object.assign({}, this.state), { fileUpl: undefined, fileOk: true, upload: false }));
             }
             catch (e) {
-                this.setState(Object.assign(Object.assign({}, this.state), { fileOk: false }));
+                this.setState(Object.assign(Object.assign({}, this.state), { fileOk: false, upload: false }));
                 if (e.status === 401) {
                     helpers_1.redirectToLogin();
                 }
@@ -21141,35 +21183,41 @@ class User extends React.Component {
     }
     render() {
         var _a;
-        return (React.createElement("div", null,
-            React.createElement("form", { encType: "multipart/form-data", onSubmit: this.insertNewKitten.bind(this) },
-                "file input:",
-                ' ',
-                React.createElement("input", { type: "file", name: "image", onChange: this.onFileChange.bind(this) }),
+        if (this.state.upload) {
+            return React.createElement("div", null, "Uploading File... Please wait");
+        }
+        return (React.createElement("div", { style: { display: 'flex', flexDirection: 'row' } },
+            React.createElement("div", null,
+                "USER SCORE ",
+                this.state.userScore,
+                " ",
                 React.createElement("br", null),
-                React.createElement(input_1.Input, { label: "Kitten name", name: "name", value: (_a = this.state.kitten.name) === null || _a === void 0 ? void 0 : _a.toString(), onChange: data => this.updateData(data) }),
-                React.createElement("input", { type: "submit", value: "INSERT KITTEN" }),
+                "USER POSITION ",
+                this.state.userPosition,
+                " ",
                 React.createElement("br", null),
-                this.state.fileOk != null &&
-                    this.state.fileOk &&
-                    'UPLOAD OK',
-                this.state.fileOk != null &&
-                    !this.state.fileOk &&
-                    'UPLOAD ERROR'),
-            React.createElement("br", null),
-            React.createElement("br", null),
-            "USER SCORE ",
-            this.state.userScore,
-            " ",
-            React.createElement("br", null),
-            "USER POSITION ",
-            this.state.userPosition,
-            " ",
-            React.createElement("br", null),
-            "SCORE BOARD:",
-            React.createElement("ul", { className: "score-board-container" }, this.state.scoreBoard.map((user, index) => {
-                return React.createElement("li", { key: index }, UserElement(user));
-            }))));
+                "SCORE BOARD:",
+                React.createElement("ul", { className: "score-board-container" }, this.state.scoreBoard.map((user, index) => {
+                    return React.createElement("li", { key: index }, UserElement(user));
+                }))),
+            React.createElement("div", { style: { position: 'absolute', left: 'auto', right: 0 } },
+                "INSERT KITTEN!",
+                React.createElement("br", null),
+                React.createElement("form", { encType: "multipart/form-data", onSubmit: this.insertNewKitten.bind(this) },
+                    "file input:",
+                    ' ',
+                    React.createElement("input", { disabled: this.state.upload, type: "file", name: "image", onChange: this.onFileChange.bind(this) }),
+                    React.createElement("br", null),
+                    React.createElement(input_1.TextInput, { disabled: this.state.upload, label: "Kitten name", error: this.state.inputError, name: "name", value: (_a = this.state.kitten.name) === null || _a === void 0 ? void 0 : _a.toString(), onChange: data => this.updateData(data) }),
+                    React.createElement("br", null),
+                    React.createElement("input", { type: "submit", value: "Confirm" }),
+                    React.createElement("br", null),
+                    this.state.fileOk != null &&
+                        this.state.fileOk &&
+                        'UPLOAD OK',
+                    this.state.fileOk != null &&
+                        !this.state.fileOk &&
+                        'UPLOAD ERROR'))));
     }
 }
 exports.User = User;
