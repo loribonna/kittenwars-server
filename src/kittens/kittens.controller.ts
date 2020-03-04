@@ -14,16 +14,14 @@ import {
 	UsePipes,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
-import { CreateImageDto } from 'src/dto/create-image.dto';
+import { CreateImageDto } from '../dto/create-image.dto';
 import { diskStorage } from 'multer';
-import { IKitten } from 'src/interfaces/kitten.interface';
+import { IKitten } from '../interfaces/kitten.interface';
 import { KittenService } from './kitten.service';
 import { Response, Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
-import { fetchImageAndSend } from 'src/helpers/fetch-img';
-import { CreateKittenDtoValidatorPipe } from 'src/dto/create-kitten.dto';
-
-interface Survey {}
+import { fetchImageAndSend } from '../helpers/fetch-img';
+import { CreateKittenDtoValidatorPipe } from '../dto/create-kitten.dto';
 
 @Controller('kittens')
 export class KittensController {

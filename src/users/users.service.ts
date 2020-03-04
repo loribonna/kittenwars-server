@@ -1,7 +1,7 @@
 import { Injectable, Inject } from '@nestjs/common';
 import { Model } from 'mongoose';
-import { USER_MODEL_INJECTION_KEY } from 'src/constants/constants';
-import { IUser, IUserExtended } from 'src/interfaces/users.interface';
+import { USER_MODEL_INJECTION_KEY } from '../constants/constants';
+import { IUser, IUserExtended } from '../interfaces/users.interface';
 
 @Injectable()
 export class UsersService {

@@ -2,8 +2,8 @@ import { Injectable } from '@nestjs/common';
 import { NextFunction } from 'express';
 import { PassportStrategy } from '@nestjs/passport';
 import { AuthService } from './auth.service';
-import { IUser } from 'src/interfaces/users.interface';
-import { AuthMode, BASE_URL } from 'src/constants/constants';
+import { IUser } from '../interfaces/users.interface';
+import { AuthMode, BASE_URL } from '../constants/constants';
 import * as passport from 'passport';
 import { ConfigService } from '@nestjs/config';
 import {

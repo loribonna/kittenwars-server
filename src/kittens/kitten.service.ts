@@ -1,10 +1,10 @@
 import { Model } from 'mongoose';
 import { Injectable, Inject } from '@nestjs/common';
 import { IKitten, IKittenExtended } from '../interfaces/kitten.interface';
-import { KITTEN_MODEL_INJECTION_KEY } from 'src/constants/constants';
-import { CreateImageDto } from 'src/dto/create-image.dto';
-import { deleteImage } from 'src/helpers/delete-img';
-import { CreateKittenDto } from 'src/dto/create-kitten.dto';
+import { KITTEN_MODEL_INJECTION_KEY } from '../constants/constants';
+import { CreateImageDto } from '../dto/create-image.dto';
+import { deleteImage } from '../helpers/delete-img';
+import { CreateKittenDto } from '../dto/create-kitten.dto';
 
 @Injectable()
 export class KittenService {

@@ -3,7 +3,7 @@ import { KittenSchema } from '../schemas/kitten.schema';
 import {
 	KITTEN_MODEL_INJECTION_KEY,
 	DATABASE_INJECTION_KEY,
-} from 'src/constants/constants';
+} from '../constants/constants';
 
 export const kittenProvider = [
 	{
