@@ -16,9 +16,9 @@ import { AuthService } from './auth.service';
 import { NextFunction, Request, Response } from 'express';
 import passport = require('passport');
 import { AuthGuard } from '@nestjs/passport';
-import { BASE_URL, AuthMode } from 'src/constants/constants';
+import { BASE_URL, AuthMode } from '../constants/constants';
 import { OAuth2Client } from 'google-auth-library';
-import { IUser } from 'src/interfaces/users.interface';
+import { IUser } from '../interfaces/users.interface';
 
 @Controller('auth')
 export class AuthController {

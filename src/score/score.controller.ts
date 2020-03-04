@@ -7,10 +7,10 @@ import {
 	Res,
 	UnauthorizedException,
 } from '@nestjs/common';
-import { UsersService } from 'src/users/users.service';
+import { UsersService } from '../users/users.service';
 import { Response } from 'express';
-import { KittenService } from 'src/kittens/kitten.service';
-import { fetchImageAndSend } from 'src/helpers/fetch-img';
+import { KittenService } from '../kittens/kitten.service';
+import { fetchImageAndSend } from '../helpers/fetch-img';
 var fs = require('fs');
 
 @Controller('score')

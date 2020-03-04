@@ -1,5 +1,5 @@
 import { Length, Min, Max, IsInt, IsOptional } from 'class-validator';
-import { IKitten } from 'src/interfaces/kitten.interface';
+import { IKitten } from '../interfaces/kitten.interface';
 import { DtoBase } from './dto.base';
 import {
 	PipeTransform,

@@ -2,7 +2,7 @@ import { Controller, UseGuards, Get, Req } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { AuthGuard } from '@nestjs/passport';
 import { Request } from 'express';
-import { IUser } from 'src/interfaces/users.interface';
+import { IUser } from '../interfaces/users.interface';
 
 @Controller('users')
 export class UsersController {
