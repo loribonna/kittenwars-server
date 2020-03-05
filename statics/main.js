@@ -20992,7 +20992,10 @@ class Score extends React.Component {
         if (this.state.loading) {
             return React.createElement("div", null, "Loading...");
         }
-        else if (!this.state.bestKittens && !this.state.worstKittens) {
+        else if (!this.state.bestKittens ||
+            !this.state.worstKittens ||
+            !this.state.bestKittens.length ||
+            !this.state.worstKittens.length) {
             return React.createElement("div", null, "Not enough Kittens to War!. INSERT A KITTEN");
         }
         const getKitten = (kittens, type) => !this.state.loading && kittens && kittens.length > 0 ? (React.createElement("div", { style: {
