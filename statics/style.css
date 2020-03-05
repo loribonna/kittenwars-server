@@ -1,0 +1,57 @@
+
+@media (min-width: 700px) {
+  .kittens-container {
+    background-color: black;
+    display: flex;
+    flex-direction: row;
+    max-width: auto; }
+  .kittens-image {
+    display: block;
+    width: auto;
+    height: auto;
+    max-width: 50%; } }
+
+.kittens-container {
+  background-color: "transparent";
+  align-items: center;
+  width: 100%; }
+
+.kittens-image {
+  align-items: center;
+  display: block;
+  height: 50%;
+  width: auto; }
+
+.image-container {
+  height: 100%; }
+
+.image-img {
+  max-width: 100%;
+  height: auto; }
+  .image-img-hover:hover {
+    cursor: pointer; }
+
+.custom-header {
+  background-color: #eee; }
+
+
+@media (min-width: 700px) {
+  .score-container {
+    display: flex;
+    flex-direction: row; } }
+
+.score-kitten-container {
+  height: 100%;
+  display: block;
+  max-width: 50%; }
+
+.score-image-container {
+  display: block;
+  align-items: center;
+  height: auto;
+  max-width: 100%; }
+
+
+
+
+/*# sourceMappingURL=style.css.map*/
