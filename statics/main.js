@@ -20438,7 +20438,11 @@ exports.LoggedPages = [
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.BASE_URI = 'http://localhost:3000';
+exports.getBaseUrl = () => {
+    const hostname = window.location.hostname;
+    return 'http://' + hostname;
+};
+exports.BASE_URI = exports.getBaseUrl();
 exports.KITTENS_URI = exports.BASE_URI + '/kittens/';
 exports.VOTE_URI = exports.BASE_URI + '/vote';
 exports.LOGIN_URI = exports.BASE_URI + '/app/login';
@@ -20807,6 +20811,7 @@ class Kittens extends React.Component {
                 if (e.status === 401) {
                     helpers_1.redirectToDefault();
                 }
+                this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
             }
         });
     }
