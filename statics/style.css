@@ -1,0 +1,47 @@
+
+@media (min-width: 800px) {
+  .kittens-container {
+    display: flex;
+    flex-direction: row; } }
+
+.kittens-container {
+  background-color: black;
+  align-items: center; }
+
+.kittens-right {
+  display: block;
+  height: 50%;
+  flex: 1; }
+
+.kittens-left {
+  display: block;
+  height: 50%;
+  flex: 1; }
+
+.image-container {
+  height: 100%; }
+
+.image-img {
+  max-width: 100%;
+  height: auto; }
+  .image-img-hover:hover {
+    cursor: pointer; }
+
+.custom-header {
+  background-color: #eee; }
+
+
+@media (min-width: 700px) {
+  .score-container {
+    display: flex;
+    flex-direction: row; } }
+
+.score-image-container {
+  display: block;
+  align-items: center;
+  height: auto; }
+
+
+
+
+/*# sourceMappingURL=style.css.map*/

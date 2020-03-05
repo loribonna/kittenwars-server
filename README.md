@@ -5,9 +5,9 @@ Server web per l'applicativo web e mobile di Kittenwars.
 -   Prima installazione: `npm install`
 -   Compilazione: `npm run build`
 -   Avvio: `npm start`
-    -   Server in ascolto sulla porta 3000
+    -   Server in ascolto sulla porta `3000`
 
-Il progetto comprende solo il server. I file statici (precompilati) del front-end devono essere posti nella cartella `statics`.
+Il progetto comprende il server e i file statici (precompilati) del front-end nella cartella `statics`.
 Il server necessita di un file di ambiente (`.env`) comprensivo di:
 
 -   `EXPRESS_SECRET`: stringa casuale per sessione di express,
