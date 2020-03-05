@@ -21235,23 +21235,35 @@ class User extends React.Component {
             }
         });
     }
-    insertNewKitten(event) {
+    checkData() {
         return __awaiter(this, void 0, void 0, function* () {
-            event.preventDefault();
-            if (!this.state.fileUpl) {
-                return;
-            }
             this.setState(Object.assign(Object.assign({}, this.state), { upload: true, inputError: false }));
-            const imageDto = new create_image_dto_1.CreateImageDto(this.state.fileUpl);
-            const kittenDto = new create_kitten_dto_1.CreateKittenDto(this.state.kitten);
             try {
+                console.log(this.state.kitten);
+                if (!this.state.fileUpl) {
+                    throw new Error('File error');
+                }
+                const imageDto = new create_image_dto_1.CreateImageDto(this.state.fileUpl);
+                const kittenDto = new create_kitten_dto_1.CreateKittenDto(this.state.kitten);
                 yield Promise.all([
                     imageDto.validateOrReject(),
                     kittenDto.validateOrReject()
                 ]);
+                return true;
             }
             catch (e) {
-                this.setState(Object.assign(Object.assign({}, this.state), { inputError: true, upload: false }));
+                console.warn(e);
+                this.setState(Object.assign(Object.assign({}, this.state), { inputError: true, upload: false, fileUpl: undefined, fileOk: false }));
+                return false;
+            }
+        });
+    }
+    insertNewKitten(event) {
+        return __awaiter(this, void 0, void 0, function* () {
+            event.preventDefault();
+            const valid = yield this.checkData();
+            if (!valid) {
+                return;
             }
             try {
                 const token = helpers_1.getJWTToken();
@@ -21259,7 +21271,7 @@ class User extends React.Component {
                 formData.append('image', this.state.fileUpl);
                 formData.append('kitten', JSON.stringify(this.state.kitten));
                 yield crud_1.post('/kittens', formData, token);
-                this.setState(Object.assign(Object.assign({}, this.state), { fileUpl: undefined, fileOk: true, upload: false, kitten: {} }));
+                this.setState(Object.assign(Object.assign({}, this.state), { fileUpl: undefined, inputError: false, fileOk: true, upload: false, kitten: {} }));
             }
             catch (e) {
                 this.setState(Object.assign(Object.assign({}, this.state), { fileOk: false, upload: false }));
