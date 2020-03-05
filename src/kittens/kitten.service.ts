@@ -13,7 +13,10 @@ export class KittenService {
 		private readonly kittenModel: Model<IKittenExtended>,
 	) {}
 
-	async create(file: CreateImageDto, kittenInfo: CreateKittenDto): Promise<IKitten> {
+	async create(
+		file: CreateImageDto,
+		kittenInfo: CreateKittenDto,
+	): Promise<IKitten> {
 		const obj: IKitten = {
 			name: kittenInfo.name,
 			age: kittenInfo.age,
@@ -39,6 +42,20 @@ export class KittenService {
 			_id: kittenID,
 			approved: { $exists: true, $eq: true },
 		});
+	}
+
+	async getApprovedKittens(pageNumber?: number, pageSize?: number) {
+		let queryBase = this.kittenModel.aggregate([
+			{ $match: { approved: { $exists: true, $eq: true } } },
+		]);
+		if (!pageNumber) {
+			return queryBase;
+		} else {
+			pageSize = pageSize ? pageSize : 20;
+			const skips = pageSize * (pageNumber - 1);
+
+			return queryBase.skip(skips).limit(pageSize);
+		}
 	}
 
 	async getRandomKittens(size = 1): Promise<IKitten[]> {
@@ -95,12 +112,12 @@ export class KittenService {
 		);
 	}
 
-	async rejectKitten(id: String) {
-		const kitten = await this.kittenModel.findOne({_id: id});
+	async deleteKitten(id: String) {
+		const kitten = await this.kittenModel.findOne({ _id: id });
 
 		return Promise.all([
 			deleteImage(kitten.savedName),
-			this.kittenModel.deleteOne({ _id: id })
+			this.kittenModel.deleteOne({ _id: id }),
 		]);
 	}
 }

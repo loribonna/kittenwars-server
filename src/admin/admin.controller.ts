@@ -7,6 +7,8 @@ import {
 	UnauthorizedException,
 	Put,
 	Body,
+	Delete,
+	Query,
 } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { KittenService } from '../kittens/kitten.service';
@@ -15,6 +17,7 @@ import { Request } from 'express';
 import { IUser } from '../interfaces/users.interface';
 import { IKitten } from '../interfaces/kitten.interface';
 import { KittenEvaluateDto } from '../dto/kitten-evaluate.dto';
+import { KittenDeleteDto } from '../dto/kitten-delete.dto';
 
 @Controller('admin')
 export class AdminController {
@@ -53,12 +56,55 @@ export class AdminController {
 
 			if (isAdmin) {
 				if (val.accepted) {
-					this.kittenService.approveKitten(val.kittenId);
+					await this.kittenService.approveKitten(val.kittenId);
 				} else {
-					this.kittenService.rejectKitten(val.kittenId);
+					await this.kittenService.deleteKitten(val.kittenId);
 				}
 
 				return { status: 'ok' };
+			} else {
+				throw new UnauthorizedException('User is not admin');
+			}
+		} catch (e) {
+			console.error(e);
+			throw new InternalServerErrorException('Server error');
+		}
+	}
+
+	@Delete('kitten')
+	@UseGuards(AuthGuard('jwt'))
+	async deleteKitten(@Req() req: Request, @Body() kitten: KittenDeleteDto) {
+		try {
+			const isAdmin = await this._checkAdminUser(req);
+
+			if (isAdmin) {
+				await this.kittenService.deleteKitten(kitten.id);
+			} else {
+				throw new UnauthorizedException('User is not admin');
+			}
+			
+			return { status: 'ok' };
+		} catch (e) {
+			console.error(e);
+			throw new InternalServerErrorException('Server error');
+		}
+	}
+
+	@Get('approved')
+	@UseGuards(AuthGuard('jwt'))
+	async getApprovedKittens(@Req() req: Request, @Query() query) {
+		let pageNumber, pageSize;
+
+		if (query) {
+			pageNumber = query.pageNumber ? query.pageNumber : null;
+			pageSize = query.pageSize ? query.pageSize : null;
+		}
+
+		try {
+			const isAdmin = await this._checkAdminUser(req);
+
+			if (isAdmin) {
+				return this.kittenService.getApprovedKittens(pageNumber, pageSize);
 			} else {
 				throw new UnauthorizedException('User is not admin');
 			}

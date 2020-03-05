@@ -20169,8 +20169,19 @@ exports.put = (url, body, JWTtoken) => __awaiter(void 0, void 0, void 0, functio
         return res.json();
     }));
 });
-exports.del = (url) => __awaiter(void 0, void 0, void 0, function* () {
-    return fetch(url, { method: 'DELETE' }).then(res => {
+exports.del = (url, body, JWTtoken) => __awaiter(void 0, void 0, void 0, function* () {
+    let headers = {
+        'Content-Type': 'application/json',
+        Accept: 'application/json'
+    };
+    if (JWTtoken) {
+        headers = Object.assign(Object.assign({}, headers), { Authorization: `Bearer ${JWTtoken}` });
+    }
+    return fetch(url, {
+        method: 'DELETE',
+        body: body ? JSON.stringify(body) : null,
+        headers: headers
+    }).then(res => {
         if (!res.ok) {
             throw { status: res.status };
         }
@@ -20516,35 +20527,75 @@ function KittenElement(kitten) {
 class Admin extends React.Component {
     constructor(props) {
         super(props);
-        this.state = { kittens: [], loading: true };
+        this.state = {
+            pendingKittens: [],
+            loading: true,
+            pendingPage: true,
+            approvedKittens: []
+        };
     }
     componentDidMount() {
         return __awaiter(this, void 0, void 0, function* () {
             yield this.getPendingImages();
-            this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
         });
     }
     getPendingImages() {
         return __awaiter(this, void 0, void 0, function* () {
+            this.setState(Object.assign(Object.assign({}, this.state), { loading: true }));
             try {
                 const token = helpers_1.getJWTToken();
                 const kittens = yield crud_1.get('/admin/unapproved', token);
-                this.setState(Object.assign(Object.assign({}, this.state), { kittens: kittens }));
+                this.setState(Object.assign(Object.assign({}, this.state), { pendingKittens: kittens }));
             }
             catch (e) {
-                console.log(e);
+                console.error(e);
             }
+            this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
         });
     }
-    removeKitten(kitten) {
-        const kittens = [...this.state.kittens];
+    getApprovedKittens() {
+        return __awaiter(this, void 0, void 0, function* () {
+            this.setState(Object.assign(Object.assign({}, this.state), { loading: true }));
+            try {
+                const token = helpers_1.getJWTToken();
+                const kittens = yield crud_1.get('/admin/approved', token);
+                this.setState(Object.assign(Object.assign({}, this.state), { approvedKittens: kittens }));
+            }
+            catch (e) {
+                console.error(e);
+            }
+            this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
+        });
+    }
+    removePendingKitten(kitten) {
+        const kittens = [...this.state.pendingKittens];
         const kittenIndex = kittens.findIndex(k => k._id === kitten._id);
         if (kittenIndex > -1) {
             kittens.splice(kittenIndex, 1);
-            this.setState(Object.assign(Object.assign({}, this.state), { kittens: kittens }));
+            this.setState(Object.assign(Object.assign({}, this.state), { pendingKittens: kittens }));
         }
     }
-    evaluateKitten(kitten, index) {
+    deleteKittenList(kitten) {
+        const kittens = [...this.state.approvedKittens];
+        const kittenIndex = kittens.findIndex(k => k._id === kitten._id);
+        if (kittenIndex > -1) {
+            kittens.splice(kittenIndex, 1);
+            this.setState(Object.assign(Object.assign({}, this.state), { approvedKittens: kittens }));
+        }
+    }
+    deleteKitten(kitten) {
+        return __awaiter(this, void 0, void 0, function* () {
+            try {
+                const token = helpers_1.getJWTToken();
+                yield crud_1.del(statics_1.ADMIN_URI + 'kitten', { id: kitten._id }, token);
+                this.deleteKittenList(kitten);
+            }
+            catch (e) {
+                console.error(e);
+            }
+        });
+    }
+    evaluateKitten(kitten) {
         return (accepted) => __awaiter(this, void 0, void 0, function* () {
             const dto = new kitten_evaluate_dto_1.KittenEvaluateDto({
                 kittenId: kitten._id,
@@ -20554,43 +20605,91 @@ class Admin extends React.Component {
                 yield dto.validateOrReject();
                 const token = helpers_1.getJWTToken();
                 yield crud_1.put(statics_1.ADMIN_URI + 'evaluate', dto, token);
-                this.removeKitten(kitten);
+                this.removePendingKitten(kitten);
             }
             catch (e) {
-                console.log(e);
+                console.error(e);
             }
         });
     }
+    onPendingFocus() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.state.pendingKittens ||
+                this.state.pendingKittens.length == 0) {
+                yield this.getPendingImages();
+            }
+            this.setState(Object.assign(Object.assign({}, this.state), { pendingPage: true }));
+        });
+    }
+    onTotalFocus() {
+        return __awaiter(this, void 0, void 0, function* () {
+            if (!this.state.approvedKittens ||
+                this.state.approvedKittens.length == 0) {
+                yield this.getApprovedKittens();
+            }
+            this.setState(Object.assign(Object.assign({}, this.state), { pendingPage: false }));
+        });
+    }
     render() {
+        let RenderComponent = React.createElement("div", null);
         if (this.state.loading) {
             return React.createElement("div", null, "Loading data...");
         }
-        if (!this.state.kittens || this.state.kittens.length == 0) {
-            return React.createElement("div", null, "Nothing to do here!");
+        const getKittenRender = (kitten) => (React.createElement("div", { style: {
+                overflow: 'hidden',
+                objectFit: 'scale-down',
+                width: '50%'
+            } },
+            KittenElement(kitten),
+            React.createElement(image_1.ImageDisplay, { style: {
+                    maxWidth: '100%',
+                    height: 'auto',
+                    objectFit: 'scale-down',
+                    imageOrientation: 'from-image'
+                }, key: kitten.savedName, imageID: kitten.savedName })));
+        if (this.state.pendingPage) {
+            if (!this.state.pendingKittens ||
+                this.state.pendingKittens.length == 0) {
+                RenderComponent = React.createElement("div", null, "Nothing to do here!");
+            }
+            else {
+                if (!this.state.pendingKittens ||
+                    this.state.pendingKittens.length == 0) {
+                    RenderComponent = React.createElement("div", null, "Nothing to do here!");
+                }
+                else {
+                    RenderComponent = (React.createElement("div", null,
+                        React.createElement("ul", { className: "admin-kittens-container" }, this.state.pendingKittens.map((kitten, index) => {
+                            return (React.createElement("li", { key: index },
+                                getKittenRender(kitten),
+                                React.createElement("button", { onClick: () => __awaiter(this, void 0, void 0, function* () {
+                                        return yield this.evaluateKitten(kitten)(true);
+                                    }) }, "ACCEPT"),
+                                ' ',
+                                React.createElement("button", { onClick: () => __awaiter(this, void 0, void 0, function* () {
+                                        return yield this.evaluateKitten(kitten)(false);
+                                    }) }, "DELETE")));
+                        }))));
+                }
+            }
+        }
+        else {
+            if (!this.state.approvedKittens ||
+                this.state.approvedKittens.length == 0) {
+                RenderComponent = React.createElement("div", null, "Nothing to do here!");
+            }
+            else {
+                RenderComponent = (React.createElement("div", null,
+                    React.createElement("ul", null, this.state.approvedKittens.map((kitten, index) => (React.createElement("li", { key: index },
+                        getKittenRender(kitten),
+                        React.createElement("button", { onClick: () => __awaiter(this, void 0, void 0, function* () { return yield this.deleteKitten(kitten); }) }, "DELETE"),
+                        ' '))))));
+            }
         }
         return (React.createElement("div", null,
-            React.createElement("ul", { className: "admin-kittens-container" }, this.state.kittens.map((kitten, index) => {
-                return (React.createElement("li", { key: index },
-                    React.createElement("div", { style: {
-                            overflow: 'hidden',
-                            objectFit: 'scale-down',
-                            height: '50%'
-                        } },
-                        KittenElement(kitten),
-                        React.createElement(image_1.ImageDisplay, { style: {
-                                maxWidth: '100%',
-                                height: 'auto',
-                                objectFit: 'scale-down',
-                                imageOrientation: 'from-image'
-                            }, key: kitten.savedName, imageID: kitten.savedName })),
-                    React.createElement("button", { onClick: () => __awaiter(this, void 0, void 0, function* () {
-                            return yield this.evaluateKitten(kitten, index)(true);
-                        }) }, "ACCEPT"),
-                    ' ',
-                    React.createElement("button", { onClick: () => __awaiter(this, void 0, void 0, function* () {
-                            return yield this.evaluateKitten(kitten, index)(false);
-                        }) }, "DELETE")));
-            }))));
+            React.createElement("button", { disabled: this.state.pendingPage, onClick: this.onPendingFocus.bind(this) }, "Show Pending Kittens"),
+            React.createElement("button", { disabled: !this.state.pendingPage, onClick: this.onTotalFocus.bind(this) }, "Show Total Kittens"),
+            React.createElement("div", null, RenderComponent)));
     }
 }
 exports.Admin = Admin;
@@ -20802,6 +20901,9 @@ class Kittens extends React.Component {
                         this.setState(Object.assign(Object.assign({}, this.state), { leftKitten: kittens[0], rightKitten: kittens[1], loading: false }));
                     }
                 }
+                else {
+                    this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
+                }
             }
             catch (e) {
                 if (e.status === 401) {
@@ -20854,8 +20956,8 @@ class Kittens extends React.Component {
         }
         return (React.createElement("div", null,
             React.createElement("div", { className: "kittens-container" },
-                React.createElement("div", { className: "kittens-left" }, this.state.leftKitten && (React.createElement(image_1.ImageDisplay, { key: this.state.leftKitten.savedName, imageID: this.state.leftKitten.savedName, onClick: this.voteKitten.bind(this) }))),
-                React.createElement("div", { className: "kittens-right" }, this.state.rightKitten && (React.createElement(image_1.ImageDisplay, { key: this.state.rightKitten.savedName, imageID: this.state.rightKitten.savedName, onClick: this.voteKitten.bind(this) })))),
+                React.createElement("div", { className: "kittens-image" }, this.state.leftKitten && (React.createElement(image_1.ImageDisplay, { key: this.state.leftKitten.savedName, imageID: this.state.leftKitten.savedName, onClick: this.voteKitten.bind(this) }))),
+                React.createElement("div", { className: "kittens-image" }, this.state.rightKitten && (React.createElement(image_1.ImageDisplay, { key: this.state.rightKitten.savedName, imageID: this.state.rightKitten.savedName, onClick: this.voteKitten.bind(this) })))),
             this.state.win != null && this.state.win && 'WIN',
             this.state.win != null && !this.state.win && 'LOSE'));
     }
@@ -20995,7 +21097,7 @@ class Score extends React.Component {
             !this.state.worstKittens.length) {
             return React.createElement("div", null, "Not enough Kittens to War!. INSERT A KITTEN");
         }
-        const getKitten = (kittens, type) => !this.state.loading && kittens && kittens.length > 0 ? (React.createElement("div", { style: {
+        const getKitten = (kittens, type) => !this.state.loading && kittens && kittens.length > 0 ? (React.createElement("div", { className: "score-kitten-container", style: {
                 alignItems: 'center',
                 textTransform: 'uppercase'
             } },
@@ -21157,7 +21259,7 @@ class User extends React.Component {
                 formData.append('image', this.state.fileUpl);
                 formData.append('kitten', JSON.stringify(this.state.kitten));
                 yield crud_1.post('/kittens', formData, token);
-                this.setState(Object.assign(Object.assign({}, this.state), { fileUpl: undefined, fileOk: true, upload: false }));
+                this.setState(Object.assign(Object.assign({}, this.state), { fileUpl: undefined, fileOk: true, upload: false, kitten: {} }));
             }
             catch (e) {
                 this.setState(Object.assign(Object.assign({}, this.state), { fileOk: false, upload: false }));
