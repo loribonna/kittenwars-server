@@ -20807,6 +20807,7 @@ class Kittens extends React.Component {
                 if (e.status === 401) {
                     helpers_1.redirectToDefault();
                 }
+                this.setState(Object.assign(Object.assign({}, this.state), { loading: false }));
             }
         });
     }
