@@ -13620,7 +13620,7 @@ if (false) {} else {
 /*!***************************************************************!*\
   !*** ./node_modules/react-router-dom/esm/react-router-dom.js ***!
   \***************************************************************/
-/*! exports provided: BrowserRouter, HashRouter, Link, NavLink, MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter */
+/*! exports provided: MemoryRouter, Prompt, Redirect, Route, Router, StaticRouter, Switch, __RouterContext, generatePath, matchPath, useHistory, useLocation, useParams, useRouteMatch, withRouter, BrowserRouter, HashRouter, Link, NavLink */
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -19779,7 +19779,7 @@ class Header extends React.Component {
         if (this.props.isAdmin != this.state.isAdmin) {
             newState = Object.assign(Object.assign({}, newState), { isAdmin: this.props.isAdmin });
         }
-        if (this.props.location.hash !== this.state.location.hash) {
+        if (this.props.location.pathname !== this.state.location.pathname) {
             newState = Object.assign(Object.assign({}, newState), { location: this.props.location });
             this.props.onPageChange(location);
         }
@@ -19791,20 +19791,25 @@ class Header extends React.Component {
     onNavClick(page) {
         this.props.history.push(page);
     }
+    getHeaderClass(headerName) {
+        return headerName === this.state.location.pathname
+            ? 'navbar-brand header-active'
+            : 'navbar-brand';
+    }
     renderLoggedUser() {
         return (React.createElement("nav", { className: "navbar navbar-expand-lg navbar-light custom-header" },
             React.createElement("div", { className: "mr-auto" },
-                React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.kittens]) }, "Kittens"),
-                React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.score]) }, "Score"),
-                React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.user]) }, "User"),
-                this.state.isAdmin && (React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.admin]) }, "Admin"))),
-            React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.logout]) }, "Logout")));
+                React.createElement("a", { className: this.getHeaderClass(interfaces_1.Pages.kittens), href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.kittens]) }, "Kittens"),
+                React.createElement("a", { className: this.getHeaderClass(interfaces_1.Pages.score), href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.score]) }, "Score"),
+                React.createElement("a", { className: this.getHeaderClass(interfaces_1.Pages.user), href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.user]) }, "User"),
+                this.state.isAdmin && (React.createElement("a", { className: this.getHeaderClass(interfaces_1.Pages.admin), href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.admin]) }, "Admin"))),
+            React.createElement("a", { className: this.getHeaderClass(interfaces_1.Pages.logout), href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.logout]) }, "Logout")));
     }
     renderUnloggedUser() {
         return (React.createElement("nav", { className: "navbar navbar-expand-lg navbar-light custom-header" },
             React.createElement("div", { className: "mr-auto" },
-                React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.score]) }, "Score")),
-            React.createElement("a", { className: "navbar-brand", href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.login]) }, "Login")));
+                React.createElement("a", { className: this.getHeaderClass(interfaces_1.Pages.score), href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.score]) }, "Score")),
+            React.createElement("a", { className: this.getHeaderClass(interfaces_1.Pages.login), href: "#", onClick: () => this.onNavClick.apply(this, [interfaces_1.Pages.login]) }, "Login")));
     }
     render() {
         return (React.createElement("div", null,

@@ -10,10 +10,10 @@ export class UsersService {
 		private readonly userModel: Model<IUserExtended>,
 	) {}
 
-	async _updateUserScore(user: IUser, update: -1 | 1): Promise<IUser> {
+	async updateUserScore(user: IUser, val: number): Promise<IUser> {
 		return this.userModel.findOneAndUpdate(
 			{ 'account.id': user.account.id },
-			{ $inc: { score: update } },
+			{ $inc: { score: val } },
 			{ new: true },
 		);
 	}
@@ -26,8 +26,17 @@ export class UsersService {
 		return this.userModel.findOne({ 'account.id': id });
 	}
 
+	async getUserScoreAvg(): Promise<number> {
+		const docs = await this.userModel.aggregate([
+			{ $group: { _id: null, avg: { $avg: '$score' } } },
+		]);
+		return docs.length > 0 ? docs[0].avg : 0;
+	}
+
 	async create(user: IUser): Promise<IUser> {
+		const avg = await this.getUserScoreAvg();
 		const newUser = new this.userModel(user);
+		newUser.score = avg;
 		return newUser.save();
 	}
 
@@ -52,11 +61,11 @@ export class UsersService {
 			.then(count => count + 1);
 	}
 
-	async incUserScore(user: IUser): Promise<IUser> {
-		return this._updateUserScore(user, 1);
-	}
+	// async incUserScore(user: IUser, val: number): Promise<IUser> {
+	// 	return this._updateUserScore(user, 1);
+	// }
 
-	async decUserScore(user: IUser): Promise<IUser> {
-		return this._updateUserScore(user, -1);
-	}
+	// async decUserScore(user: IUser, val: number): Promise<IUser> {
+	// 	return this._updateUserScore(user, -1);
+	// }
 }

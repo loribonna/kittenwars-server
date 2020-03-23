@@ -53,10 +53,10 @@ export class VoteController {
 			const winnerKitten =
 				kittenA.votes > kittenB.votes ? kittenA : kittenB;
 			if (kittenVoted.savedName === winnerKitten.savedName) {
-				this.userService.incUserScore(user);
+				this.userService.updateUserScore(user, 1/(<number>kittenVoted.votes+1));
 				return true;
 			} else {
-				this.userService.decUserScore(user);
+				this.userService.updateUserScore(user, -1/(<number>kittenVoted.votes+1));
 				return false;
 			}
 		} catch (e) {
